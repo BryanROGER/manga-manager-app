@@ -1,0 +1,21 @@
+{
+  "name": "Environnement Fullstack Manga",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {
+    "ghcr.io/devcontainers/features/mysql:1": {
+      "databaseName": "mangadb"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vmware.vscode-spring-boot-dashboard",
+        "vscjava.vscode-spring-boot-extension-pack",
+        "angular.ng-template"
+      ]
+    }
+  },
+  "remoteUser": "codespace",
+  "postCreateCommand": "echo 'L environnement est prêt !'"
+}
