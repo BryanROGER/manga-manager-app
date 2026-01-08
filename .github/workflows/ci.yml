@@ -7,12 +7,12 @@ on:
       - 'backend/**'
       - '.github/workflows/ci.yml'
   pull_request:
-    branches: [ main ]
+    types: [opened, synchronize, reopened]
     paths:
       - 'backend/**'
+  workflow_dispatch:
 
 jobs:
-  # JOB 1 : Vérification du style (Linter)
   lint:
     runs-on: ubuntu-latest
     defaults:
@@ -27,13 +27,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Run Checkstyle
-        # On utilise checkstyle pour le lint (doit être dans le pom.xml)
-        # Sinon on peut utiliser : mvn compile antrun:run@checkstyle
-        run: mvn checkstyle:check || echo "Linting finished with warnings"
+        # On ne bloque pas la pipeline si le style est imparfait pour l'instant
+        run: mvn checkstyle:check || echo "Linter terminé avec des avertissements"
 
-  # JOB 2 : Compilation et Tests unitaires
   build-and-test:
-    needs: lint # Ne se lance que si le Lint est OK
+    needs: lint
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -50,15 +48,14 @@ jobs:
       - name: Build and Test
         run: mvn clean verify
 
-      - name: Share JaCoCo Report
+      - name: Upload JaCoCo Report
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: backend/target/site/jacoco/jacoco.xml
 
-  # JOB 3 : Analyse Qualité (SonarCloud)
   sonar-analysis:
-    needs: build-and-test # Attend que les tests soient finis
+    needs: build-and-test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -67,24 +64,30 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: maven
 
       - name: Download JaCoCo Report
         uses: actions/download-artifact@v4
         with:
           name: jacoco-report
+          # On le replace exactement là où Sonar s'attend à le trouver
           path: backend/target/site/jacoco/
 
       - name: SonarCloud Scan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        # L'astuce est ici : on ajoute 'compile' avant 'sonar:sonar'
+        # Cela génère les .class nécessaires sans relancer les tests
         run: |
-          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          mvn compile org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=BryanROGER_manga-manager-app \
             -Dsonar.organization=bryanroger \
-            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
