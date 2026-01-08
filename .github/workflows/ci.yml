@@ -1,40 +1,51 @@
-name: SonarQube
+name: CI Backend Java 21
+
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
     paths:
       - 'backend/**'
   pull_request:
     types: [opened, synchronize, reopened]
-  workflow_dispatch:
+    paths:
+      - 'backend/**'
+  workflow_dispatch: # Permet de le lancer à la main si besoin
 
 jobs:
-  build:
-    name: Build and analyze
+  build-and-analyze:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: 21
-          distribution: 'temurin' # Alternative distribution options are available.
-      - name: Cache SonarQube packages
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+
       - name: Build and analyze
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=BryanROGER_manga-manager-app
+        # On combine le test (verify) et l'envoi à Sonar en une seule commande
+        run: |
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=BryanROGER_manga-manager-app \
+            -Dsonar.organization=bryanroger \
+            -Dsonar.host.url=https://sonarcloud.io
