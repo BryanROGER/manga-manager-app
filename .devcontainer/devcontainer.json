@@ -1,9 +1,12 @@
 {
   "name": "Environnement Fullstack Manga",
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "image": "mcr.microsoft.com/devcontainers/java:21",
   "features": {
     "ghcr.io/devcontainers/features/mysql:1": {
       "databaseName": "mangadb"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
     }
   },
   "customizations": {
@@ -16,6 +19,6 @@
       ]
     }
   },
-  "remoteUser": "codespace",
-  "postCreateCommand": "echo 'L environnement est prêt !'"
+  "remoteUser": "vscode",
+  "postCreateCommand": "echo 'Environnement Java 21 et Node.js prêt !'"
 }

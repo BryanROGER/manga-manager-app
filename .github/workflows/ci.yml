@@ -1,0 +1,45 @@
+name: CI Backend Java 21
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**' # Ne se lance que si tu modifies le backend
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  build-and-analyze:
+    runs-on: ubuntu-latest
+
+    # On définit le dossier de travail par défaut pour toutes les commandes
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build and Test with Maven
+        run: mvn clean verify
+        # Ici, Jacoco va générer le rapport de couverture
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          # On précise à Sonar où se trouve le projet à analyser
+          projectBaseDir: backend
