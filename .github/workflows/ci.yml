@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'backend/**' # Ne se lance que si tu modifies le backend
+      - 'backend/**'
   pull_request:
     branches: [ main ]
     paths:
@@ -14,15 +14,15 @@ jobs:
   build-and-analyze:
     runs-on: ubuntu-latest
 
-    # On définit le dossier de travail par défaut pour toutes les commandes
     defaults:
       run:
         working-directory: backend
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Important pour SonarCloud (historique de git)
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -32,14 +32,24 @@ jobs:
           cache: maven
 
       - name: Build and Test with Maven
+        # verify exécute les tests et génère le rapport JaCoCo
         run: mvn clean verify
-        # Ici, Jacoco va générer le rapport de couverture
+
+      - name: Upload JaCoCo Report (Artifact)
+        # Permet de télécharger le rapport HTML complet depuis l'onglet "Actions"
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: backend/target/site/jacoco/
+          retention-days: 7
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        # Utiliser Maven pour Sonar est plus fiable pour Java
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          # On précise à Sonar où se trouve le projet à analyser
-          projectBaseDir: backend
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=BryanROGER_manga-manager-app \
+            -Dsonar.organization=bryanroger \
+            -Dsonar.host.url=https://sonarcloud.io

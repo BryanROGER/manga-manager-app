@@ -28,6 +28,9 @@
     </scm>
     <properties>
         <java.version>21</java.version>
+        <sonar.projectKey>BryanROGER_manga-manager-app</sonar.projectKey>
+        <sonar.organization>bryanroger</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
     <dependencies>
         <dependency>
