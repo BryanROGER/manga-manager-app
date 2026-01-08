@@ -6,10 +6,10 @@ on:
     paths:
       - 'backend/**'
   pull_request:
-    branches: [ main ]
+    types: [opened, synchronize, reopened]
     paths:
       - 'backend/**'
-  workflow_dispatch:
+  workflow_dispatch: # Permet de le lancer à la main si besoin
 
 jobs:
   build-and-analyze:
@@ -32,16 +32,20 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build and Test with Maven
-        run: mvn clean verify
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
-      - name: SonarCloud Scan
+      - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        # On utilise le nom complet du plugin pour éviter l'erreur de "prefix"
+        # On combine le test (verify) et l'envoi à Sonar en une seule commande
         run: |
-          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=BryanROGER_manga-manager-app \
-            -Dsonar.organization=bryanroger \
+            -Dsonar.organization=VOTRE_ORG_NAME \
             -Dsonar.host.url=https://sonarcloud.io
