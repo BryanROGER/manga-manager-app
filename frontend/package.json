@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "jest",
-    "test:ci": "jest --ci --coverage --maxWorkers=2",    "lint": "ng lint"
+    "test:ci": "npx jest --ci --coverage --maxWorkers=2",
+    "lint": "ng lint"
   },
   "prettier": {
     "printWidth": 100,
