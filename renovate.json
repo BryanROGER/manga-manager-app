@@ -1,6 +1,34 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
-  ]
+    "config:recommended",
+    ":preserveSemverRanges",
+    ":disableMajorUpdates",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "packageRules": [
+    {
+      "description": "Groupe toutes les dépendances Angular",
+      "matchPackagePatterns": ["^@angular/", "^@schematics/angular"],
+      "matchManagers": ["npm"],
+      "groupName": "Angular Ecosystem"
+    },
+    {
+      "description": "Groupe Spring Boot et ses dépendances liées",
+      "matchPackagePatterns": ["^org.springframework.boot", "^org.springframework.cloud"],
+      "matchManagers": ["maven"],
+      "groupName": "Spring Boot Ecosystem"
+    },
+    {
+      "description": "Automerge pour les mises à jour mineures et patch si les tests passent",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    }
+  ],
+  "timezone": "Europe/Paris",
+  "schedule": ["0 9 * * *"],
+  "dependencyDashboard": true,
+  "baseBranches": ["main"]
 }
