@@ -5,6 +5,9 @@
     ":preserveSemverRanges",
     ":disableMajorUpdates"
   ],
+  "ignorePaths": [
+    ".devcontainer/**"
+  ],
   "packageRules": [
     {
       "matchPackagePatterns": ["^@angular/"],
