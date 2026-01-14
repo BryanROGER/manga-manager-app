@@ -22,6 +22,6 @@
     }
   ],
   "timezone": "Europe/Paris",
-  "schedule": ["at 9am"],
+  "schedule": ["* 5 * * *"],
   "dependencyDashboard": true
 }
