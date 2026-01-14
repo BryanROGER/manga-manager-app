@@ -3,24 +3,18 @@
   "extends": [
     "config:recommended",
     ":preserveSemverRanges",
-    ":disableMajorUpdates",
-    "helpers:pinGitHubActionDigests"
+    ":disableMajorUpdates"
   ],
   "packageRules": [
     {
-      "description": "Groupe toutes les dépendances Angular",
-      "matchPackagePatterns": ["^@angular/", "^@schematics/angular"],
-      "matchManagers": ["npm"],
+      "matchPackagePatterns": ["^@angular/"],
       "groupName": "Angular Ecosystem"
     },
     {
-      "description": "Groupe Spring Boot et ses dépendances liées",
-      "matchPackagePatterns": ["^org.springframework.boot", "^org.springframework.cloud"],
-      "matchManagers": ["maven"],
+      "matchPackagePatterns": ["^org.springframework.boot"],
       "groupName": "Spring Boot Ecosystem"
     },
     {
-      "description": "Automerge pour les mises à jour mineures et patch si les tests passent",
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
       "automergeType": "pr",
@@ -28,7 +22,6 @@
     }
   ],
   "timezone": "Europe/Paris",
-  "schedule": ["0 9 * * *"],
-  "dependencyDashboard": true,
-  "baseBranches": ["main"]
+  "schedule": ["at 9am"],
+  "dependencyDashboard": true
 }
