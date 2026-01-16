@@ -12,4 +12,10 @@ public interface MangaService {
      * @return liste de mangas
      */
     List<Manga> getAllManga();
+
+    /**
+     * Permet de récupérer un manga en fonction de son ID
+     * @return un manga
+     */
+    Manga getMangaById(Integer mangaID);
 }
