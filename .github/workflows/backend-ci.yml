@@ -46,7 +46,7 @@ jobs:
           cache: maven
 
       - name: Build and Test
-        run: mvn clean verify
+        run: mvn verify
 
       - name: Upload JaCoCo Report
         uses: actions/upload-artifact@v4

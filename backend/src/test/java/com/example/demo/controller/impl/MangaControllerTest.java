@@ -37,4 +37,18 @@ class MangaControllerTest {
 
         verify(mangaService, times(1)).getAllManga();
     }
+
+    @Test
+    void testGetById(){
+        var mangaId = 1;
+        var manga = Manga.builder().animeId(mangaId).build();
+
+        when(mangaService.getMangaById(mangaId)).thenReturn(manga);
+
+        var result = mangaController.getMangaById(mangaId);
+
+        assertNotNull(result);
+        assertNotNull(result.getBody());
+        assertEquals(mangaId, result.getBody().getAnimeId());
+    }
 }

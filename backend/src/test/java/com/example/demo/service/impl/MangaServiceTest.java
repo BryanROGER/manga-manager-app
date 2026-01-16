@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -33,5 +34,18 @@ class MangaServiceTest {
         assertNotNull(result);
         assertEquals(mangas.size(), result.size());
         verify(mangaRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testFindById(){
+        var mangaId = 1;
+        var manga = Optional.of(Manga.builder().animeId(mangaId).build());
+
+        when(mangaRepository.findById(mangaId)).thenReturn(manga);
+
+        var result = mangaService.getMangaById(mangaId);
+
+        assertNotNull(result);
+        assertEquals(mangaId, result.getAnimeId());
     }
 }

@@ -9,4 +9,6 @@ import java.util.List;
 public interface MangaController {
 
     ResponseEntity<List<Manga>> getAllManga();
+
+    ResponseEntity<Manga> getMangaById(Integer mangaId);
 }
