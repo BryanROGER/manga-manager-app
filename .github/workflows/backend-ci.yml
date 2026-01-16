@@ -46,12 +46,16 @@ jobs:
           cache: maven
 
       - name: Build and Test
-        run: mvn verify
+        run: mvn clean verify
+
+      - name: Debug - List target files
+        run: find target -name "jacoco.xml" || echo "Fichier introuvable"
 
       - name: Upload JaCoCo Report
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
+          # On part de la racine du dépôt GitHub
           path: backend/target/site/jacoco/jacoco.xml
 
   sonar-analysis:
@@ -61,7 +65,7 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -75,16 +79,15 @@ jobs:
       - name: Download JaCoCo Report
         uses: actions/download-artifact@v4
         with:
-          name: jacoco-report
-          # On le replace exactement là où Sonar s'attend à le trouver
-          path: backend/target/site/jacoco/
+            name: jacoco-report
+            path: .
 
       - name: Build and analyze with SonarCloud
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=BryanROGER_manga-manager-app \
             -Dsonar.organization=bryanroger \
             -Dsonar.host.url=https://sonarcloud.io \
