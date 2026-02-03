@@ -23,7 +23,7 @@
     ]
   },
   "private": true,
-  "packageManager": "npm@11.6.2",
+  "packageManager": "npm@11.8.0",
   "dependencies": {
     "@angular-eslint/eslint-plugin": "^21.1.0",
     "@angular/common": "^21.0.0",
